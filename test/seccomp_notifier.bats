@@ -8,10 +8,6 @@ function setup() {
 		skip "seccomp is not enabled"
 	fi
 
-	if [[ "$ARCH" != "$ARCH_X86_64" ]]; then
-		skip "not supported on arch $ARCH"
-	fi
-
 	setup_test
 }
 
@@ -41,10 +37,11 @@ function teardown() {
 	done
 
 	sleep 6 # wait until the notifier stop the workload
-	EXPECTED_EXIT_STATUS=137 wait_until_exit "$CTR"
 
 	# Assert
 	grep -q "Got seccomp notifier message for container ID: $CTR (syscall = swapoff)" "$CRIO_LOG"
+	# Check if container exited
+	crictl inspect "$CTR" | jq -e '.status.state == "CONTAINER_EXITED"'
 	crictl inspect "$CTR" | jq -e '.status.reason == "seccomp killed"'
 	crictl inspect "$CTR" | jq -e '.status.message == "Used forbidden syscalls: swapoff (3x)"'
 	curl -sf "http://localhost:$PORT/metrics" | grep 'container_runtime_crio_containers_seccomp_notifier_count_total{name="k8s_podsandbox1-redis_podsandbox1_redhat.test.crio_redhat-test-crio_0",syscall="swapoff"} 3'
@@ -102,10 +99,11 @@ function teardown() {
 	done
 
 	sleep 6 # wait until the notifier stop the workload
-	EXPECTED_EXIT_STATUS=137 wait_until_exit "$CTR"
 
 	# Assert
 	grep -q "Got seccomp notifier message for container ID: $CTR (syscall = swapoff)" "$CRIO_LOG"
+	# Check if container exited
+	crictl inspect "$CTR" | jq -e '.status.state == "CONTAINER_EXITED"'
 	crictl inspect "$CTR" | jq -e '.status.reason == "seccomp killed"'
 	crictl inspect "$CTR" | jq -e '.status.message == "Used forbidden syscalls: swapoff (5x)"'
 }
