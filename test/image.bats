@@ -305,6 +305,8 @@ function teardown() {
 }
 
 @test "run container in pod with crun-wasm enabled" {
+	# remove once fedora tests are on fedora 39
+	skip "crun-wasm dependency on fedora 36 is out of date"
 	if [ -z "$CRUN_WASM_BINARY" ] || [[ "$RUNTIME_TYPE" == "vm" ]]; then
 		skip "crun-wasm not installed or runtime type is VM"
 	fi
@@ -348,8 +350,9 @@ EOF
 		"$TESTDATA"/container_config.json > "$TESTDIR/timezone.json"
 
 	ctr_id=$(crictl run "$TESTDIR/timezone.json" "$TESTDATA/sandbox_config.json")
-	output=$(crictl exec "$ctr_id" date +"%a %b %e %H:%M:%S %Z %Y")
-	expected_output=$(TZ="Asia/Singapore" date +"%a %b %e %H:%M:%S %Z %Y")
+	datestr=$(date +%s)
+	output=$(crictl exec "$ctr_id" date -d "@$datestr" +"%a %b %e %H:%M:%S %Z %Y")
+	expected_output=$(TZ="Asia/Singapore" date -d "@$datestr" +"%a %b %e %H:%M:%S %Z %Y")
 	[[ "$output" == *"$expected_output"* ]]
 }
 
@@ -361,7 +364,8 @@ EOF
 		"$TESTDATA"/container_config.json > "$TESTDIR/empty_timezone.json"
 
 	ctr_id=$(crictl run "$TESTDIR/empty_timezone.json" "$TESTDATA/sandbox_config.json")
-	output=$(crictl exec "$ctr_id" date +"%a %b %e %H:%M:%S %Z %Y")
-	expected_output=$(date +"%a %b %e %H:%M:%S %Z %Y")
+	datestr=$(date +%s)
+	output=$(crictl exec "$ctr_id" date -d "@$datestr" +"%a %b %e %H:%M:%S %Z %Y")
+	expected_output=$(date -d "@$datestr" +"%a %b %e %H:%M:%S %Z %Y")
 	[[ "$output" == *"$expected_output"* ]]
 }
