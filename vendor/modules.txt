@@ -262,7 +262,7 @@ github.com/containers/conmon/runner/config
 ## explicit; go 1.20
 github.com/containers/conmon-rs/internal/proto
 github.com/containers/conmon-rs/pkg/client
-# github.com/containers/image/v5 v5.29.2
+# github.com/containers/image/v5 v5.29.3-0.20240409133913-ea4fcca19343
 ## explicit; go 1.19
 github.com/containers/image/v5/copy
 github.com/containers/image/v5/directory
@@ -352,8 +352,6 @@ github.com/containers/ocicrypt/utils/keyprovider
 # github.com/containers/podman/v4 v4.9.3
 ## explicit; go 1.18
 github.com/containers/podman/v4/pkg/checkpoint/crutils
-github.com/containers/podman/v4/pkg/errorhandling
-github.com/containers/podman/v4/pkg/rootless
 # github.com/containers/storage v1.51.0
 ## explicit; go 1.19
 github.com/containers/storage
